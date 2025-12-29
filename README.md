@@ -10,7 +10,7 @@
 ### 👥 Cadastro de Clientes
 ![Cadastro de Clientes](screenshots/cadastro-cliente.jpg)
 
-### 👥 Busca do Clientes
+### 👥 Busca do Cliente
 ![Busca do Clientes](screenshots/busca.jpg)
 
 ### 🛒 Compras
