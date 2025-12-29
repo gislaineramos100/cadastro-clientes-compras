@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha do Cliente</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .card-financeiro { background: #000; color: #fff; padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        .btn-acao { padding: 5px 10px; border: none; cursor: pointer; color: white; font-weight: bold; border-radius: 4px; margin-right: 5px; }
+    </style>
+</head>
+<body class="caixa-alta">
+    <div class="container">
+        <h1 id="fNome">CARREGANDO...</h1>
+        <p>CPF: <span id="fCpf"></span></p>
+
+        <div class="card-financeiro">
+            <span>SALDO DEVEDOR TOTAL</span>
+            <h2 id="exibirSaldo">R$ 0,00</h2>
+            <button onclick="irParaNovaVenda()" style="background: red; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 5px;">🛒 NOVA VENDA</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>DATA</th><th>TIPO</th><th>VALOR</th><th>AÇÕES</th></tr>
+            </thead>
+            <tbody id="listaMov"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Captura o CPF da URL e garante que ele seja acessível globalmente
+        const params = new URLSearchParams(window.location.search);
+        const cpfGlobal = params.get('cpf');
+        const userLogado = JSON.parse(localStorage.getItem('usuario'))?.nome || "ADMIN";
+
+        // Função para o botão NOVA VENDA não dar erro de referência
+        function irParaNovaVenda() {
+            if (cpfGlobal) {
+                window.location.href = `compras.html?cpf=${cpfGlobal}`;
+            } else {
+                alert("ERRO: CPF NÃO LOCALIZADO.");
+            }
+        }
+
+        async function carregar() {
+            if (!cpfGlobal) {
+                document.getElementById('fNome').innerText = "CPF INVÁLIDO";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/clientes/${cpfGlobal}`);
+                if (!res.ok) throw new Error("Erro na resposta do servidor");
+                const d = await res.json();
+                
+                document.getElementById('fNome').innerText = d.cliente.nome;
+                document.getElementById('fCpf').innerText = d.cliente.cpf;
+                
+                let saldoTotalCalculado = 0;
+                const listaHtml = d.compras.map(m => {
+                    const valor = parseFloat(m.saldoDevedor || 0);
+                    // Garante que o tipo exista para não quebrar o .toUpperCase()
+                    const tipo = (m.tipoPagamento || "A PRAZO").toUpperCase().trim();
+                    const ehAVista = tipo === "A VISTA";
+
+                    if (!ehAVista) {
+                        saldoTotalCalculado += valor;
+                    }
+
+                    return `<tr>
+                        <td>${new Date(m.data).toLocaleDateString()}</td>
+                        <td>${tipo}</td>
+                        <td style="color:${ehAVista ? 'green' : (valor > 0 ? 'red' : 'green')}">
+                            R$ ${ehAVista ? '0.00' : valor.toFixed(2)}
+                        </td>
+                        <td>
+                            <button class="btn-acao" style="background:#3498db" onclick="window.location.href='imprimir-movimento.html?id=${m.id}'">RECIBO</button>
+                            ${!ehAVista 
+                                ? `<button class="btn-acao" style="background:#f39c12" onclick="ajustar('${m.id}', ${valor})">AJUSTAR</button>` 
+                                : '<span style="font-size:11px; color:gray;">PAGO</span>'}
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                document.getElementById('listaMov').innerHTML = listaHtml || "<tr><td colspan='4'>SEM MOVIMENTOS</td></tr>";
+                document.getElementById('exibirSaldo').innerText = `R$ ${saldoTotalCalculado.toFixed(2)}`;
+
+            } catch (err) {
+                console.error("Erro ao carregar ficha:", err);
+                document.getElementById('fNome').innerText = "ERRO AO CARREGAR DADOS";
+            }
+        }
+
+        async function ajustar(id, vAtual) {
+            const novo = prompt("DIGITE O NOVO VALOR:", vAtual);
+            if (novo === null || novo === "") return;
+            
+            try {
+                const res = await fetch(`/api/compras/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        novoValor: parseFloat(novo).toFixed(2), 
+                        usuarioMotivo: userLogado 
+                    })
+                });
+
+                if (res.ok) {
+                    carregar(); 
+                } else {
+                    const erroData = await res.json();
+                    alert(erroData.error || "ERRO NO AJUSTE");
+                }
+            } catch (e) {
+                alert("ERRO DE CONEXÃO");
+            }
+        }
+
+        carregar();
+    </script>
+</body>
+</html>

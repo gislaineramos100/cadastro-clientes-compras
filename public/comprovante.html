@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cupom de Venda</title>
+    <style>
+        /* CONFIGURAÇÃO PARA BOBINA TÉRMICA */
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 58mm; /* Largura padrão de bobina pequena. Mude para 80mm se sua impressora for grande */
+            margin: 0; 
+            padding: 2mm;
+            font-size: 10px;
+            color: #000;
+            line-height: 1.2;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { width: 100%; margin: 0; padding: 0; }
+            @page { margin: 0; }
+        }
+
+        .centralizado { text-align: center; }
+        .negrito { font-weight: bold; }
+        .linha-tracejada { border-top: 1px dashed #000; margin: 5px 0; }
+        .espaco-topo { margin-top: 5px; }
+        
+        /* Tabela de Itens Estilo Cupom */
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; }
+        th { text-align: left; border-bottom: 1px solid #000; font-size: 9px; }
+        td { font-size: 9px; padding: 2px 0; }
+        .col-valor { text-align: right; }
+
+        .resumo { margin-top: 5px; }
+        .resumo-item { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .total-final { font-size: 12px; font-weight: bold; margin-top: 5px; border-top: 1px solid #000; padding-top: 3px; }
+
+        .no-print { display: flex; flex-direction: column; gap: 5px; margin-top: 20px; }
+        button { padding: 10px; cursor: pointer; font-size: 12px; font-weight: bold; border: 1px solid #000; }
+        .btn-black { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="centralizado negrito" style="font-size: 14px;">NOME DA SUA EMPRESA</div>
+    <div class="centralizado" style="font-size: 8px;">
+        Rua Exemplo, 123 - Centro<br>
+        Cidade - Estado | (00) 0000-0000
+    </div>
+
+    <div class="linha-tracejada"></div>
+    <div class="centralizado negrito">CUPOM DE VENDA</div>
+    <div class="linha-tracejada"></div>
+
+    <div id="infoGeral">
+        DATA: <span id="pData"></span><br>
+        CPF: <span id="pCpf"></span><br>
+        PGTO: <span id="pTipo"></span> <span id="pParc"></span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>DESCRIÇÃO</th>
+                <th class="col-valor">VALOR</th>
+            </tr>
+        </thead>
+        <tbody id="pItens">
+            </tbody>
+    </table>
+
+    <div class="linha-tracejada"></div>
+
+    <div class="resumo">
+        <div class="resumo-item"><span>SUBTOTAL:</span> <span id="pBruto"></span></div>
+        <div class="resumo-item"><span>DESCONTO:</span> <span id="pDesc"></span></div>
+        <div class="resumo-item"><span>ENTRADA:</span> <span id="pEnt"></span></div>
+        <div class="resumo-item total-final"><span>A PAGAR:</span> <span id="pSaldo"></span></div>
+    </div>
+
+    <div class="linha-tracejada"></div>
+    <div class="centralizado espaco-topo">
+        OBRIGADO PELA PREFERENCIA!<br>VOLTE SEMPRE.
+    </div>
+    <div class="centralizado" style="margin-top: 10px;">
+        --------------------------<br>
+        Assinatura do Cliente
+    </div>
+
+    <div class="no-print">
+        <button class="btn-black" onclick="imprimir()">IMPRIMIR CUPOM</button>
+        <button onclick="window.location.href='index.html'">VOLTAR AO MENU</button>
+    </div>
+
+    <script>
+       
+    async function carregarDados() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idVenda = urlParams.get('id');
+        let d;
+
+        if (idVenda) {
+            // Se tem ID na URL, busca do servidor (Vindo do Relatório ou Ficha)
+            const res = await fetch(`/api/compras/${idVenda}`);
+            d = await res.json();
+        } else {
+            // Se não tem ID, busca o que acabou de ser vendido (LocalStorage)
+            d = JSON.parse(localStorage.getItem('ultimaCompra'));
+        }
+
+        if (!d) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Preenchimento dos campos (ajustado para aceitar as duas fontes)
+        document.getElementById('pData').innerText = new Date(d.data || Date.now()).toLocaleString('pt-BR', {dateStyle: 'short', timeStyle: 'short'});
+        document.getElementById('pCpf').innerText = d.cpf;
+        document.getElementById('pTipo').innerText = d.tipoPagamento;
+        document.getElementById('pParc').innerText = d.qtdParcelas > 1 ? `(${d.qtdParcelas}X)` : "";
+
+        // Garante que os números existam antes de usar toFixed
+       // Substitua a parte dos cálculos por esta:
+const total = Number(d.totalBruto || d.total || 0);
+const desc = Number(d.desconto || 0);
+const ent = Number(d.entrada || 0);
+const saldo = Number(d.saldoDevedor || d.saldo || 0);
+
+document.getElementById('pBruto').innerText = `R$ ${total.toFixed(2)}`;
+document.getElementById('pDesc').innerText = `R$ ${desc.toFixed(2)}`;
+document.getElementById('pEnt').innerText = `R$ ${ent.toFixed(2)}`;
+document.getElementById('pSaldo').innerText = `R$ ${saldo.toFixed(2)}`;
+        document.getElementById('pItens').innerHTML = d.itens.map(i => `
+            <tr>
+                <td>${(i.nome || i.descricao).substring(0, 18)}</td>
+                <td class="col-valor">${parseFloat(i.valor).toFixed(2)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function imprimir() {
+        window.print();
+        // Não removemos mais o localStorage aqui para permitir que o usuário 
+        // imprima mais de uma via se a impressora travar.
+    }
+
+    carregarDados();
+</script>
+    
+</body>
+</html>

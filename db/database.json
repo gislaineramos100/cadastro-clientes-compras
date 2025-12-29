@@ -1,0 +1,401 @@
+{
+  "clientes": [
+    {
+      "nome": "GISLAINE RAMOS DOS SANTOS",
+      "cpf": "01955891141",
+      "telefone": "17996624130",
+      "endereco": "RUA DAS GRALHAS, 115",
+      "dataCadastro": "2025-12-28T17:29:51.902Z"
+    },
+    {
+      "nome": "JEAN",
+      "cpf": "01955891140",
+      "telefone": "17996624130",
+      "endereco": "RUA DAS GRALHAS, 115",
+      "dataCadastro": "2025-12-28T17:30:21.867Z"
+    }
+  ],
+  "compras": [
+    {
+      "id": "1766943043652",
+      "cpf": "01955891140",
+      "tipoPagamento": "A VISTA",
+      "total": "0.00",
+      "itens": [
+        {
+          "nome": "CALCA",
+          "valor": 100
+        }
+      ],
+      "entrada": "0.00",
+      "saldoDevedor": "0.00",
+      "data": "2025-12-28T17:30:43.652Z",
+      "historico": []
+    },
+    {
+      "id": "1766943107651",
+      "cpf": "01955891140",
+      "tipoPagamento": "PARCELADO",
+      "total": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "entrada": "5.00",
+      "saldoDevedor": "1.00",
+      "data": "2025-12-28T17:31:47.651Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:32:23.652Z",
+          "tipo": "AJUSTE",
+          "descricao": "ALTEROU SALDO DE R$ -5.00 PARA R$ 2.00",
+          "usuario": "JEAN"
+        },
+        {
+          "data": "2025-12-28T17:39:03.047Z",
+          "tipo": "AJUSTE",
+          "descricao": "ALTEROU SALDO DE R$ 2.00 PARA R$ 1.00",
+          "usuario": "JEAN"
+        }
+      ]
+    },
+    {
+      "id": "1766943271880",
+      "cpf": "01955891140",
+      "tipoPagamento": "PARCELADO",
+      "total": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "entrada": "0.00",
+      "saldoDevedor": "0.00",
+      "data": "2025-12-28T17:34:31.880Z",
+      "historico": []
+    },
+    {
+      "id": "1766943391048",
+      "cpf": "01955891140",
+      "tipoPagamento": "PARCELADO",
+      "total": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "entrada": "10.00",
+      "saldoDevedor": "-10.00",
+      "data": "2025-12-28T17:36:31.048Z",
+      "historico": []
+    },
+    {
+      "id": "1766943573231",
+      "cpf": "01955891140",
+      "tipoPagamento": "PARCELADO",
+      "valorBruto": "0.00",
+      "desconto": "5.00",
+      "valorFinal": "-5.00",
+      "entrada": "10.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T17:39:33.231Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:39:33.231Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL - VALOR: R$ -5.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766943616126",
+      "cpf": "01955891140",
+      "tipoPagamento": "PARCELADO",
+      "valorBruto": "0.00",
+      "desconto": "0.00",
+      "valorFinal": "0.00",
+      "entrada": "0.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T17:40:16.126Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:40:16.126Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL - VALOR: R$ 0.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766943675349",
+      "cpf": "01955891140",
+      "tipoPagamento": "A VISTA",
+      "valorBruto": "0.00",
+      "desconto": "10.00",
+      "valorFinal": "-10.00",
+      "entrada": "20.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SAI",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T17:41:15.349Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:41:15.349Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL - VALOR: R$ -10.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766943705453",
+      "cpf": "01955891140",
+      "tipoPagamento": "A VISTA",
+      "valorBruto": "0.00",
+      "desconto": "0.00",
+      "valorFinal": "0.00",
+      "entrada": "0.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "A",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T17:41:45.453Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:41:45.453Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL - VALOR: R$ 0.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766943789917",
+      "cpf": "01955891140",
+      "tipoPagamento": "A VISTA",
+      "valorBruto": "0.00",
+      "desconto": "0.00",
+      "valorFinal": "0.00",
+      "entrada": "0.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T17:43:09.917Z",
+      "historico": [
+        {
+          "data": "2025-12-28T17:43:09.917Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL - VALOR: R$ 0.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766945176922",
+      "cpf": "01955891141",
+      "tipoPagamento": "A VISTA",
+      "total": "0.00",
+      "valorFinal": "0.00",
+      "entrada": "0.00",
+      "desconto": "0.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T18:06:16.922Z",
+      "historico": [
+        {
+          "data": "2025-12-28T18:06:16.922Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL A VISTA - TOTAL: R$ 0.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766945195689",
+      "cpf": "01955891141",
+      "tipoPagamento": "PARCELADO",
+      "total": "0.00",
+      "valorFinal": "0.00",
+      "entrada": "0.00",
+      "desconto": "0.00",
+      "saldoDevedor": "10.00",
+      "itens": [
+        {
+          "nome": "SA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T18:06:35.689Z",
+      "historico": [
+        {
+          "data": "2025-12-28T18:06:35.689Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL PARCELADO - TOTAL: R$ 0.00",
+          "usuario": "SISTEMA"
+        },
+        {
+          "data": "2025-12-28T18:17:12.128Z",
+          "tipo": "AJUSTE",
+          "descricao": "ALTEROU SALDO DE R$ 0.00 PARA R$ 10.00",
+          "usuario": "JEAN"
+        }
+      ]
+    },
+    {
+      "id": "1766945814295",
+      "cpf": "01955891141",
+      "tipoPagamento": "A PRAZO (1X)",
+      "total": "100.00",
+      "valorFinal": "100.00",
+      "entrada": "0.00",
+      "desconto": "0.00",
+      "saldoDevedor": "90.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T18:16:54.321Z",
+      "historico": [
+        {
+          "data": "2025-12-28T18:16:54.335Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL A PRAZO (1X) - TOTAL: R$ 100.00",
+          "usuario": "SISTEMA"
+        },
+        {
+          "data": "2025-12-28T18:17:05.582Z",
+          "tipo": "AJUSTE",
+          "descricao": "ALTEROU SALDO DE R$ 100.00 PARA R$ 90.00",
+          "usuario": "JEAN"
+        }
+      ]
+    },
+    {
+      "id": "1766945854348",
+      "cpf": "01955891141",
+      "tipoPagamento": "A VISTA",
+      "total": "100.00",
+      "valorFinal": "100.00",
+      "entrada": "0.00",
+      "desconto": "0.00",
+      "saldoDevedor": "0.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T18:17:34.348Z",
+      "historico": [
+        {
+          "data": "2025-12-28T18:17:34.348Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL A VISTA - TOTAL: R$ 100.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766946151425",
+      "cpf": "01955891140",
+      "tipoPagamento": "A PRAZO (1X)",
+      "total": "100.00",
+      "valorFinal": "100.00",
+      "entrada": "0.00",
+      "desconto": "0.00",
+      "saldoDevedor": "100.00",
+      "itens": [
+        {
+          "nome": "SAIA",
+          "valor": 100
+        }
+      ],
+      "data": "2025-12-28T18:22:31.425Z",
+      "historico": [
+        {
+          "data": "2025-12-28T18:22:31.425Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL A PRAZO (1X) - TOTAL: R$ 100.00",
+          "usuario": "SISTEMA"
+        }
+      ]
+    },
+    {
+      "id": "1766960138503",
+      "cpf": "01955891140",
+      "tipoPagamento": "A PRAZO (3X)",
+      "total": "365.50",
+      "valorFinal": "350.50",
+      "entrada": "10.00",
+      "desconto": "15.00",
+      "saldoDevedor": "340.50",
+      "itens": [
+        {
+          "nome": "VESTIDO",
+          "valor": 150
+        },
+        {
+          "nome": "SAIA",
+          "valor": 95.5
+        },
+        {
+          "nome": "BLUSA",
+          "valor": 120
+        }
+      ],
+      "data": "2025-12-28T22:15:38.557Z",
+      "historico": [
+        {
+          "data": "2025-12-28T22:15:38.557Z",
+          "tipo": "VENDA",
+          "descricao": "VENDA INICIAL A PRAZO (3X) - TOTAL: R$ 350.50",
+          "usuario": "SISTEMA"
+        }
+      ]
+    }
+  ],
+  "usuarios": [
+    {
+      "nome": "GISLAINE RAMOS ",
+      "usuario": "admin",
+      "senha": "123",
+      "dataCriacao": "2025-12-28T21:58:18.011Z"
+    }
+  ],
+  "config": {}
+}

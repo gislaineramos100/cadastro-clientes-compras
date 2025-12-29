@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Histórico do Cliente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input, button {
+      padding: 6px;
+      margin: 4px 0;
+    }
+    .box {
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    th, td {
+      padding: 6px;
+      text-align: left;
+    }
+    .resumo {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Histórico do Cliente</h1>
+
+<label>CPF do Cliente:</label><br>
+<input id="cpf" placeholder="Digite o CPF">
+<button onclick="buscarHistorico()">Buscar</button>
+
+<hr>
+
+<div id="conteudo"></div>
+
+<script>
+function buscarHistorico() {
+  const cpfValor = cpf.value;
+
+  fetch(`/clientes/${cpfValor}/historico`)
+    .then(res => {
+      if (!res.ok) throw new Error("Cliente não encontrado");
+      return res.json();
+    })
+    .then(dados => montarTela(dados))
+    .catch(() => alert("Cliente não encontrado ou não autenticado"));
+}
+
+function montarTela(dados) {
+  const cliente = dados.cliente;
+  const compras = dados.compras;
+  const resumo = dados.resumoFinanceiro;
+
+  let html = `
+    <div class="box">
+      <h2>Dados do Cliente</h2>
+      <p><strong>Nome:</strong> ${cliente.nome}</p>
+      <p><strong>CPF:</strong> ${cliente.cpf}</p>
+      <p><strong>Telefone:</strong> ${cliente.telefone}</p>
+      <p><strong>Email:</strong> ${cliente.email}</p>
+      <p><strong>Endereço:</strong>
+        ${cliente.endereco.rua || ""},
+        ${cliente.endereco.numero || ""} -
+        ${cliente.endereco.bairro || ""} -
+        ${cliente.endereco.cidade || ""}/${cliente.endereco.estado || ""}
+      </p>
+    </div>
+  `;
+
+  compras.forEach(compra => {
+    html += `
+      <div class="box">
+        <h2>Compra #${compra.id}</h2>
+        <p><strong>Data:</strong> ${compra.dataCompra}</p>
+        <p><strong>Valor total:</strong> R$ ${compra.valorTotal.toFixed(2)}</p>
+        <p><strong>Entrada:</strong> R$ ${Number(compra.entrada).toFixed(2)}</p>
+        <p><strong>Valor restante:</strong> R$ ${Number(compra.restante).toFixed(2)}</p>
+
+        <table>
+          <tr>
+            <th>Peça</th>
+            <th>Valor</th>
+            <th>Data</th>
+          </tr>
+          ${compra.itens.map(item => `
+            <tr>
+              <td>${item.descricao}</td>
+              <td>R$ ${item.valor.toFixed(2)}</td>
+              <td>${item.data}</td>
+            </tr>
+          `).join("")}
+        </table>
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="box resumo">
+      <h2>Resumo Financeiro</h2>
+      <p><strong>Total gasto:</strong> R$ ${resumo.totalGasto.toFixed(2)}</p>
+      <p><strong>Total de entrada:</strong> R$ ${resumo.totalEntrada.toFixed(2)}</p>
+      <p><strong>Total em aberto:</strong> R$ ${resumo.totalEmAberto.toFixed(2)}</p>
+    </div>
+  `;
+
+  conteudo.innerHTML = html;
+}
+</script>
+
+</body>
+</html>

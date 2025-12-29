@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo</title>
+    <style>
+        body { font-family: monospace; width: 80mm; padding: 10px; }
+        .linha { border-top: 1px dashed #000; margin: 10px 0; }
+        .center { text-align: center; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <button class="no-print" onclick="window.print()" style="width: 100%; padding: 10px; background: #22c55e; color: white;">IMPRIMIR AGORA</button>
+    <div id="conteudo">
+        <h3 class="center">SISTEMA GESTÃO</h3>
+        <div class="linha"></div>
+        <p>DATA: <span id="rData"></span></p>
+        <p>CLIENTE: <span id="rNome"></span></p>
+        <p>CPF: <span id="rCpf"></span></p>
+        <div class="linha"></div>
+        <p>MOVIMENTO: <span id="rTipo"></span></p>
+        <h2 class="center">VALOR: R$ <span id="rValor"></span></h2>
+        <div class="linha"></div>
+        <p class="center">__________________________<br>ASSINATURA</p>
+    </div>
+
+    <script>
+        async function carregarRecibo() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            try {
+                const res = await fetch(`/api/movimento/${id}`);
+                const { movimento, cliente } = await res.json();
+                
+                document.getElementById('rData').innerText = new Date(movimento.data).toLocaleString();
+                document.getElementById('rNome').innerText = cliente ? cliente.nome : "NÃO INFORMADO";
+                document.getElementById('rCpf').innerText = movimento.cpf;
+                document.getElementById('rTipo').innerText = movimento.saldoDevedor < 0 ? "PAGAMENTO" : "VENDA";
+                document.getElementById('rValor').innerText = Math.abs(movimento.saldoDevedor).toFixed(2);
+                
+                setTimeout(() => { window.print(); }, 500);
+            } catch (e) {
+                document.body.innerHTML = "<h2>ERRO AO CARREGAR RECIBO</h2>";
+            }
+        }
+        carregarRecibo();
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Lista de Clientes</title>
+    <style>
+        body { padding-top: 70px; background: #f4f7f6; font-family: sans-serif; }
+        .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
+        #busca { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+        .btn-novo { background: #000; color: #fff; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background: #f9f9f9; cursor: pointer; }
+        .btn-ver { background: #3498db; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body class="caixa-alta">
+
+    <nav class="navbar">
+        <div class="logo">SISTEMA GESTÃO</div>
+        <div class="nav-right">
+            <a href="index.html" style="color:white; text-decoration:none;">VOLTAR AO MENU</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>CLIENTES CADASTRADOS</h1>
+        
+        <div class="search-container">
+            <input type="text" id="busca" placeholder="BUSCAR POR NOME OU CPF..." onkeyup="filtrar()">
+            <a href="cadastro-cliente.html" class="btn-novo">+ NOVO CLIENTE</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>NOME DO CLIENTE</th>
+                    <th>CPF</th>
+                    <th>TELEFONE</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaClientes">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        let clientesOriginais = [];
+
+        async function carregarClientes() {
+            try {
+                const res = await fetch('/api/clientes');
+                clientesOriginais = await res.json();
+                renderizar(clientesOriginais);
+            } catch (err) {
+                console.error("ERRO AO CARREGAR:", err);
+            }
+        }
+
+        function renderizar(lista) {
+            const corpo = document.getElementById('tabelaClientes');
+            corpo.innerHTML = lista.map(c => `
+                <tr onclick="window.location.href='cliente.html?cpf=${c.cpf}'">
+                    <td style="font-weight:bold;">${c.nome}</td>
+                    <td>${c.cpf}</td>
+                    <td>${c.telefone || 'NÃO INFORMADO'}</td>
+                    <td>
+                        <a href="cliente.html?cpf=${c.cpf}" class="btn-ver">VER FICHA</a>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (lista.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="4" style="text-align:center;">NENHUM CLIENTE ENCONTRADO</td></tr>';
+            }
+        }
+
+        function filtrar() {
+            const termo = document.getElementById('busca').value.toUpperCase();
+            const filtrados = clientesOriginais.filter(c => 
+                c.nome.includes(termo) || c.cpf.includes(termo)
+            );
+            renderizar(filtrados);
+        }
+
+        carregarClientes();
+    </script>
+</body>
+</html>

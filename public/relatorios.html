@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Relatórios</title>
+    <style>
+        /* Ajuste rápido para a tabela aparecer branca e legível */
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 20px; color: #000; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="caixa-alta">
+    <nav class="navbar">
+        <a href="index.html" style="color:white; text-decoration:none; margin-right:20px;">🏠 MENU</a>
+        <a href="relatorios.html" style="color:white; text-decoration:none;">📊 RELATÓRIOS</a>
+    </nav>
+
+    <div class="container">
+        <h1 id="titRel" style="text-align:center;">RELATÓRIO FINANCEIRO</h1>
+        
+        <div style="background:#000; padding:15px; border-radius:8px; display:flex; gap:10px; margin-bottom:20px;">
+            <select id="sAno" style="flex:1; padding:10px;">
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+            <select id="sMes" style="flex:1; padding:10px;" onchange="gerar()">
+                <option value="todos">ANUAL (FECHAMENTO MENSAL)</option>
+                <option value="0">JANEIRO</option><option value="1">FEVEREIRO</option>
+                <option value="2">MARÇO</option><option value="3">ABRIL</option>
+                <option value="4">MAIO</option><option value="5">JUNHO</option>
+                <option value="6">JULHO</option><option value="7">AGOSTO</option>
+                <option value="8">SETEMBRO</option><option value="9">OUTUBRO</option>
+                <option value="10">NOVEMBRO</option><option value="11">DEZEMBRO</option>
+            </select>
+            <button onclick="window.print()" style="background:#22c55e; color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold;">IMPRIMIR</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:20px;">
+            <div style="background:#fff; padding:15px; border:1px solid #ddd; text-align:center;">BRUTO<br><b id="rBruto">R$ 0,00</b></div>
+            <div style="background:#fff; padding:15px; border:1px solid #ddd; text-align:center;">ENTRADAS<br><b id="rEnt" style="color:green">R$ 0,00</b></div>
+            <div style="background:#fff; padding:15px; border:1px solid #ddd; text-align:center;">DESCONTOS<br><b id="rDesc">R$ 0,00</b></div>
+            <div style="background:#fff; padding:15px; border:1px solid #ddd; text-align:center;">PENDENTE<br><b id="rPend" style="color:red">R$ 0,00</b></div>
+        </div>
+
+        <div id="tabArea"></div>
+    </div>
+
+    <script>
+        let original = [];
+        const meses = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+
+        async function carregarRelatorio() {
+            try {
+                const res = await fetch('/api/relatorios');
+                if (!res.ok) throw new Error("Erro na API");
+                original = await res.json();
+                gerar();
+            } catch (err) {
+                console.error("Erro:", err);
+                document.getElementById('tabArea').innerHTML = "<h3 style='text-align:center; color:red;'>ERRO AO CARREGAR DADOS. VERIFIQUE SE O SERVIDOR ESTÁ LIGADO.</h3>";
+            }
+        }
+
+        function gerar() {
+            const m = document.getElementById('sMes').value;
+            const a = document.getElementById('sAno').value;
+            let filtradas = original.filter(c => new Date(c.data).getFullYear() == a);
+
+            if(m === 'todos') {
+                renderAnual(filtradas);
+            } else {
+                filtradas = filtradas.filter(c => new Date(c.data).getMonth() == m);
+                renderMensal(filtradas);
+            }
+            resumo(filtradas);
+        }
+
+        function resumo(l) {
+    // Blindagem total contra NaN
+    const b = l.reduce((acc, c) => acc + (Number(c.totalBruto) || 0), 0);
+    const e = l.reduce((acc, c) => acc + (Number(c.entrada) || 0), 0);
+    const d = l.reduce((acc, c) => acc + (Number(c.desconto) || 0), 0);
+    const p = l.reduce((acc, c) => acc + (Number(c.saldoDevedor) || 0), 0);
+    
+    document.getElementById('rBruto').innerText = `R$ ${b.toFixed(2)}`;
+    document.getElementById('rEnt').innerText = `R$ ${e.toFixed(2)}`;
+    document.getElementById('rDesc').innerText = `R$ ${d.toFixed(2)}`;
+    document.getElementById('rPend').innerText = `R$ ${p.toFixed(2)}`;
+}
+
+// Dentro da renderMensal(l), corrija a linha do Valor:
+// Altere para:
+html += `
+    <tr>
+        <td>${dataFmt}</td>
+        <td>${venda.nomeCliente || 'N/A'}</td>
+        <td>R$ ${Number(venda.totalBruto || 0).toFixed(2)}</td>
+        <td>${venda.tipoPagamento}</td>
+        <td>
+            <button onclick="window.location.href='comprovante.html?id=${venda.id}'" style="background:#000; color:#fff; padding:5px; border:none; cursor:pointer; font-size:10px;">REIMPRIMIR</button>
+        </td>
+    </tr>`;
+
+        function renderMensal(l) {
+    if(l.length === 0) {
+        document.getElementById('tabArea').innerHTML = "<p style='text-align:center;'>NENHUMA MOVIMENTAÇÃO NESTE PERÍODO.</p>";
+        return;
+    }
+
+    // Parte 1: Tabela de Resumo por Dia
+    const dias = [...new Set(l.map(c => new Date(c.data).getDate()))].sort((a,b)=>a-b);
+    let html = `<h3>RESUMO POR DIA</h3><table><thead><tr><th>DIA</th><th>VENDAS</th><th>BRUTO (R$)</th><th>ENTRADA (R$)</th><th>PENDENTE (R$)</th></tr></thead><tbody>`;
+    
+    dias.forEach(dia => {
+        const diaVendas = l.filter(c => new Date(c.data).getDate() == dia);
+        const bruto = diaVendas.reduce((acc, c) => acc + parseFloat(c.totalBruto || 0), 0);
+        const ent = diaVendas.reduce((acc, c) => acc + parseFloat(c.entrada || 0), 0);
+        const pend = diaVendas.reduce((acc, c) => acc + parseFloat(c.saldoDevedor || 0), 0);
+        html += `<tr><td>${dia}</td><td>${diaVendas.length}</td><td>${bruto.toFixed(2)}</td><td>${ent.toFixed(2)}</td><td>${pend.toFixed(2)}</td></tr>`;
+    });
+    html += `</tbody></table><br><br>`;
+
+    // Parte 2: Tabela Detalhada (Onde você pode clicar para imprimir)
+    html += `<h3>DETALHES DAS VENDAS</h3><table><thead><tr><th>DATA</th><th>CLIENTE</th><th>VALOR</th><th>PAGTO</th><th>AÇÕES</th></tr></thead><tbody>`;
+    
+    // Ordenar por data mais recente
+    l.sort((a,b) => new Date(b.data) - new Date(a.data)).forEach(venda => {
+        const dataFmt = new Date(venda.data).toLocaleDateString('pt-BR');
+        html += `
+            <tr>
+                <td>${dataFmt}</td>
+                <td>${venda.nomeCliente || 'N/A'}</td>
+                <td>R$ ${parseFloat(venda.totalBruto || 0).toFixed(2)}</td>
+                <td>${venda.tipoPagamento}</td>
+                <td>
+                    <button onclick="window.location.href='comprovante.html?id=${venda.id}'" style="background:#000; color:#fff; padding:5px; border:none; cursor:pointer; font-size:10px;">REIMPRIMIR</button>
+                </td>
+            </tr>`;
+    });
+
+    document.getElementById('tabArea').innerHTML = html + `</tbody></table>`;
+}
+
+        function renderAnual(l) {
+            if(l.length === 0) {
+                document.getElementById('tabArea').innerHTML = "<p style='text-align:center;'>NENHUMA MOVIMENTAÇÃO NESTE ANO.</p>";
+                return;
+            }
+            const mesesPresentes = [...new Set(l.map(c => new Date(c.data).getMonth()))].sort((a,b)=>a-b);
+            let html = `<table><thead><tr><th>MÊS</th><th>BRUTO (R$)</th><th>ENTRADA (R$)</th><th>PENDENTE (R$)</th></tr></thead><tbody>`;
+            mesesPresentes.forEach(mIdx => {
+                const mesVendas = l.filter(c => new Date(c.data).getMonth() == mIdx);
+                const b = mesVendas.reduce((acc, c) => acc + parseFloat(c.totalBruto || 0), 0);
+                const e = mesVendas.reduce((acc, c) => acc + parseFloat(c.entrada || 0), 0);
+                const p = mesVendas.reduce((acc, c) => acc + parseFloat(c.saldoDevedor || 0), 0);
+                html += `<tr><td>${meses[mIdx]}</td><td>${b.toFixed(2)}</td><td>${e.toFixed(2)}</td><td>${p.toFixed(2)}</td></tr>`;
+            });
+            document.getElementById('tabArea').innerHTML = html + `</tbody></table>`;
+        }
+
+        // CHAMA A FUNÇÃO CORRETA PARA INICIAR
+        carregarRelatorio();
+    </script>
+</body>
+</html>

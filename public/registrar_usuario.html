@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Criar Conta</title>
+</head>
+
+<style>
+        /* 1. CONFIGURAÇÃO DO FUNDO */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Fundo com a sua imagem e um filtro mais escuro para destacar o card */
+            background: linear-gradient(rgba(459, 0, 0, 0.0), rgba(0, 0, 0, 0.7)), 
+                        url('img/logo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow: hidden; /* Evita rolagem desnecessária */
+        }
+
+        /* 2. CABEÇALHO (MAIS NO TOPO E ELEGANTE) */
+        .header-sistema {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9); /* Quase preto */
+            padding: 15px 0;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 3px;
+            border-bottom: 2px solid #22c55e; /* Linha fina verde para dar destaque */
+            text-transform: uppercase;
+        }
+
+        /* 3. ALINHAMENTO DO CONTEÚDO */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center; 
+            justify-content: flex-end; 
+            padding-right: 8%; 
+        }
+
+        /* 4. CARTÃO DE LOGIN (CORES ESCURAS) */
+        .login-box1 { 
+            background: rgba(20, 20, 20, 0.9); /* Cinza quase preto */
+            padding: 40px; 
+            border-radius: 15px; 
+            width: 320px; 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid #444; /* Borda sutil para separar do fundo */
+            color: #fff;
+        }
+
+        .login-box1 h2 { 
+            margin-bottom: 30px; 
+            color: #fff; 
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* Inputs Escuros */
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border: 1px solid #444; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            background: #2b2b2b; /* Fundo do input escuro */
+            color: #fff; /* Texto do input branco */
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #22c55e; /* Brilha verde ao clicar */
+        }
+
+        /* Botão Verde */
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: #22c55e; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            transition: 0.3s;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        button:hover { 
+            background: #16a34a; 
+            transform: translateY(-2px); /* Efeito de levante */
+        }
+
+        .link-registro { 
+            display: block; 
+            margin-top: 25px; 
+            color: #aaa; 
+            text-decoration: none; 
+            font-size: 0.85em; 
+        }
+        
+        .link-registro:hover { 
+            color: #22c55e; 
+            text-decoration: underline; 
+        }
+    </style>
+
+<body class="caixa-alta">
+    <div class="login-box1" style="max-width: 500px; margin-top: 80px; ">
+        <center><h2 style="margin-top: -10px;">CRIAR NOVO USUÁRIO</h2></center>
+        <div style="background:#fff; padding:20px; border-radius:8px; border:1px solid #ddd;">
+            <input type="text" id="regNome" placeholder="NOME COMPLETO" style="width:100%; margin-bottom:10px; padding:10px;">
+            <input type="text" id="regUser" placeholder="NOME DE USUÁRIO (LOGIN)" style="width:100%; margin-bottom:10px; padding:10px;">
+            <input type="password" id="regPass" placeholder="SENHA" style="width:100%; margin-bottom:10px; padding:10px;">
+            
+            <button onclick="registrar()" style="width:100%; background:#22c55e; color:white; font-weight:bold; padding:15px; border:none; cursor:pointer;">CRIAR CONTA AGORA</button>
+            <button onclick="window.location.href='login.html'" style="width:100%; margin-top:10px; background:#666; color:white; padding:10px; border:none; cursor:pointer;">VOLTAR</button>
+        </div>
+    </div>
+
+    <script>
+        async function registrar() {
+            const nome = document.getElementById('regNome').value;
+            const usuario = document.getElementById('regUser').value;
+            const senha = document.getElementById('regPass').value;
+
+            if(!usuario || !senha) return alert("Preencha usuário e senha!");
+
+            const res = await fetch('/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, usuario, senha })
+            });
+
+            if(res.ok) {
+                alert("Usuário criado com sucesso!");
+                window.location.href = 'login.html';
+            } else {
+                const erro = await res.text();
+                alert("Erro: " + erro);
+            }
+        }
+    </script>
+</body>
+</html>

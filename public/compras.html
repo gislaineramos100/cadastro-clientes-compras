@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Registrar Compra</title>
+    <style>
+        body { padding-top: 80px; }
+        .form-venda { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .grid-venda { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .item-lista { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        #campoParcelas { display: none; } /* Escondido por padrão */
+    </style>
+</head>
+<body class="caixa-alta">
+
+    <nav class="navbar">
+        <div class="logo">SISTEMA GESTÃO</div>
+        <div class="nav-right"><a href="index.html" style="color:white; text-decoration:none;">VOLTAR</a></div>
+    </nav>
+
+    <div class="container">
+        <div class="form-venda">
+            <h2>NOVA VENDA</h2>
+            
+            <div class="grid-venda">
+                <div>
+                    <label>CPF CLIENTE:</label>
+                    <input type="text" id="vCpf" style="width:100%; padding:10px;">
+                </div>
+                <div>
+                    <label>PAGAMENTO:</label>
+                    <select id="vTipo" onchange="toggleParcelas()" style="width:100%; padding:10px;">
+                        <option value="A VISTA">À VISTA</option>
+                        <option value="PARCELADO">PARCELADO</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="campoParcelas" style="margin-bottom: 15px;">
+                <label>QUANTIDADE DE PARCELAS:</label>
+                <select id="vParcelas" style="width:100%; padding:10px;">
+                    <option value="1">1X (MENSAL)</option>
+                    <option value="2">2X</option>
+                    <option value="3">3X</option>
+                    <option value="4">4X</option>
+                    <option value="5">5X</option>
+                    <option value="6">6X</option>
+                    <option value="10">10X</option>
+                    <option value="12">12X</option>
+                </select>
+            </div>
+
+            <hr>
+            <h3>ITENS</h3>
+            <div class="grid-venda">
+                <input type="text" id="pNome" placeholder="PEÇA">
+                <input type="number" id="pVal" placeholder="VALOR R$">
+            </div>
+            <button onclick="add()" style="width:100%; background:#000; color:white; padding:10px; cursor:pointer;">+ ADICIONAR ITEM</button>
+
+            <div id="pLista" style="margin: 15px 0;"></div>
+
+            <div style="background:#f9f9f9; padding:15px; border-radius:5px;">
+                <p>TOTAL: R$ <strong id="tB">0.00</strong></p>
+                <p>DESCONTO: <input type="number" id="tD" value="0" onkeyup="calc()" style="width:80px;"></p>
+                <p>ENTRADA: <input type="number" id="tE" value="0" onkeyup="calc()" style="width:80px;"></p>
+                <h3>SALDO DEVEDOR: R$ <span id="tF" style="color:red">0.00</span></h3>
+            </div>
+
+            <button onclick="salvar()" style="width:100%; padding:20px; background:#22c55e; color:white; font-weight:bold; border:none; margin-top:15px; cursor:pointer;">
+                FINALIZAR VENDA
+            </button>
+        </div>
+    </div>
+
+    <script>
+    let pecas = [];
+    // Pega o CPF da URL ou do campo de texto
+    const params = new URLSearchParams(window.location.search);
+    const cpfGlobal = params.get('cpf');
+    if (cpfGlobal) document.getElementById('vCpf').value = cpfGlobal;
+
+    function toggleParcelas() {
+        const tipo = document.getElementById('vTipo').value;
+        document.getElementById('campoParcelas').style.display = (tipo === "PARCELADO") ? "block" : "none";
+    }
+
+    function add() {
+        const n = document.getElementById('pNome').value.toUpperCase();
+        const v = parseFloat(document.getElementById('pVal').value);
+        if (!n || !v) return alert("PREENCHA ITEM E VALOR");
+        pecas.push({ nome: n, valor: v });
+        document.getElementById('pNome').value = ''; 
+        document.getElementById('pVal').value = '';
+        render();
+    }
+
+    function render() {
+        document.getElementById('pLista').innerHTML = pecas.map((p, i) => `
+            <div class="item-lista">
+                <span>${p.nome}</span>
+                <span>R$ ${p.valor.toFixed(2)} <button onclick="pecas.splice(${i},1);render()">X</button></span>
+            </div>
+        `).join('');
+        calc();
+    }
+
+    function calc() {
+        const b = pecas.reduce((acc, p) => acc + p.valor, 0);
+        const d = parseFloat(document.getElementById('tD').value || 0);
+        const e = parseFloat(document.getElementById('tE').value || 0);
+        document.getElementById('tB').innerText = b.toFixed(2);
+        document.getElementById('tF').innerText = (b - d - e).toFixed(2);
+    }
+
+    // --- FUNÇÃO SALVAR CORRIGIDA PARA SEUS IDs ---
+    async function salvar() {
+        const cpf = document.getElementById('vCpf').value;
+        if (!cpf) return alert("DIGITE O CPF DO CLIENTE!");
+        if (pecas.length === 0) return alert("ADICIONE PELO MENOS UM ITEM!");
+
+        // Captura os valores usando os IDs corretos do seu HTML
+        const totalVenda = parseFloat(document.getElementById('tB').innerText) || 0;
+        const desconto = parseFloat(document.getElementById('tD').value) || 0;
+        const entrada = parseFloat(document.getElementById('tE').value) || 0;
+        const tipo = document.getElementById('vTipo').value;
+        const parcelas = document.getElementById('vParcelas').value;
+
+        const dadosVenda = {
+            cpf: cpf.trim(),
+            tipoPagamento: tipo === "PARCELADO" ? `A PRAZO (${parcelas}X)` : "A VISTA",
+            total: totalVenda,
+            entrada: entrada,
+            desconto: desconto,
+            itens: pecas // Usa o array 'pecas' que você criou
+        };
+
+        try {
+            const res = await fetch('/api/compras', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosVenda)
+            });
+
+            if (res.ok) {
+                alert("VENDA FINALIZADA!");
+                window.location.href = `cliente.html?cpf=${cpf}`;
+            } else {
+                const erro = await res.json();
+                alert("ERRO: " + (erro.error || "Falha ao salvar"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("ERRO DE CONEXÃO COM O SERVIDOR");
+        }
+    }
+</script>
+</body>
+</html>

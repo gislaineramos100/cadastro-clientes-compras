@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema Gestão - Home</title>
+    <style>
+        /* Ajustes específicos para garantir que o layout fique bonito */
+        body {
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* HEADER: Nome na esquerda, Usuário na direita */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #000;
+            color: #fff;
+            padding: 15px 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-user {
+            font-weight: bold;
+            color: #22c55e; /* Verde para destacar o usuário */
+        }
+
+        .btn-sair {
+            background-color: #ff4d4d;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: 0.3s;
+        }
+
+        .btn-sair:hover { background-color: #cc0000; }
+
+        /* SAUDAÇÃO: Centralizada e Elegante */
+        .saudacao-container {
+            text-align: center;
+            padding: 50px 20px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 40px;
+        }
+
+        .saudacao-container h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: #333;
+        }
+
+        .saudacao-container span {
+            color: #22c55e;
+            text-transform: uppercase;
+        }
+
+        .saudacao-container p {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* GRID DE BOTÕES: 2 por linha, bem formatados */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto 50px auto;
+            padding: 0 20px;
+        }
+
+        .btn-home {
+            background-color: #fff;
+            color: #000;
+            text-decoration: none;
+            padding: 40px 20px;
+            border: 2px solid #000;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+
+        .btn-home:hover {
+            background-color: #000;
+            color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Ocultar o resumo de vendas conforme pedido */
+        #resumoVendas {
+            display: none;
+        }
+    </style>
+</head>
+<body class="caixa-alta">
+    
+
+    <header class="navbar">
+        <div class="logo" style="font-size: 1.5em; font-weight: bold; letter-spacing: 1px;">SISTEMA GESTÃO</div>
+        <div class="nav-right">
+            <span id="userDisplay" class="nav-user">CARREGANDO...</span>
+            <a href="login.html" onclick="logout()" class="btn-sair">SAIR DO SISTEMA</a>
+        </div>
+    </header>
+
+
+    <section class="saudacao-container">
+        <h1>BEM-VINDO, <span id="nomeUsuario">VENDEDOR</span>!</h1>
+        <p>SELECIONE UMA OPERAÇÃO ABAIXO PARA COMEÇAR</p>
+    </section>
+    <main class="dashboard-grid">
+        <a href="cadastrar-cliente.html" class="btn-home">
+            <span style="font-size: 2em; margin-bottom: 10px;">👤</span>
+            CADASTRAR CLIENTE
+        </a></div>
+        
+        <a href="lista-clientes.html" class="btn-home">
+            <span style="font-size: 2em; margin-bottom: 10px;">🔍</span>
+            BUSCAR CLIENTES
+        </a>
+
+        <a href="compras.html" class="btn-home">
+            <span style="font-size: 2em; margin-bottom: 10px;">💰</span>
+            NOVA VENDA
+        </a>
+
+        <a href="relatorios.html" class="btn-home">
+            <span style="font-size: 2em; margin-bottom: 10px;">📋</span>
+            RELATÓRIO DE VENDAS
+        </a>
+    </main>
+
+    <div id="resumoVendas"></div>
+
+    <script>
+        // Lógica de Identificação
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
+
+        if (!usuarioLogado) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userDisplay').innerText = usuarioLogado.nome;
+            document.getElementById('nomeUsuario').innerText = usuarioLogado.nome;
+        }
+
+        function logout() {
+            localStorage.removeItem('usuario');
+        }
+    </script>
+</body>
+</html>
